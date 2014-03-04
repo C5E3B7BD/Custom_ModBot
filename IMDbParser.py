@@ -2,18 +2,20 @@ import urllib3
 import datetime
 from bs4 import BeautifulSoup
 
+global http
+http = urllib3.PoolManager()
 class Actors:
-    global http
-    http = urllib3.PoolManager()
+    '''global http
+    http = urllib3.PoolManager()'''
     def __init__(self):
         global http
         http = urllib3.PoolManager()
-        print ("init") # never prints
-    def GetListByAge(self, min_birthYear_Date, max_birthYear_Date, URL_additions):
+        #print ("init") # never prints
+    def Age(self, min_birthYear_Date, max_birthYear_Date = str(datetime.date.today()), URL_additions = ''):
         IMDbLink ="http://www.imdb.com/search/name?birth_date="
         IMDbLink += str(min_birthYear_Date)+','
         IMDbLink += str(max_birthYear_Date)
-#That thing that looks like the Unicode unfound symbol box is just two _'s
+        #That thing that looks like the Unicode unfound symbol box is just two _'s
         #IMDbLink += str('&start='+int(((page-1)*50)+1))
         IMDbLink += URL_additions
         webPage = http.request('GET',IMDbLink)
@@ -27,6 +29,12 @@ class Actors:
             if len(ActorList)<50:
                         ActorList.append(str(NamedActorObject))
         return ActorList
+class Movies:
+    def __init__(self):
+        global http
+        http = urllib3.PoolManager()
+    def Title(self, movieTitle, actors = '', yearMadeMinimum = '', yearMadeMaximum = '', URL_additions = ''):
+        print('')
 
 
 
