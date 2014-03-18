@@ -12,14 +12,17 @@ q = IMDbParser.Actors()
 #Parse settings.config
 config = configparser.ConfigParser()
 config.read('settings.cfg')
-username = config.get('auth', 'username')
-password = config.get('auth', 'password')
+username = config.get('AUTH', 'USERNAME')
+password = config.get('AUTH', 'PASSWORD')
+subR = config.get('SETTINGS', 'SUBREDDIT')
+topSep = '|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|'
+bottomSep = '|=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=|'
 
 #Now login
-print("|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n|Ignore any warnings that pop up                  |")
+print('%s\n|Ignore any warnings that pop up                  |'% topSep)
 print("|They don't affect the bot.                       |")
 r.login(username, password)
-print('|=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=|\n')
+print('%s\n'% bottomSep)
 
 #Now do some setting up
 already_done = []
@@ -27,18 +30,20 @@ finished = False
 starletNames = []
 flaggedFor=""
 miscVar = 0
+todayDate = None
 
 #Main Loop
 while True:
-    subreddit = r.get_subreddit(config.get('settings', 'subreddit'))
+    subreddit = r.get_subreddit(subR)
     numlimit = 25
     smsn=subreddit.get_new(limit=numlimit)
     http = urllib3.PoolManager()
     
     while finished != True:
 
-        min_birthYear = str(datetime.date(datetime.date.today().year-18,datetime.date.today().month,datetime.date.today().day))
-        max_birthYear = str(datetime.date.today())
+        todayDate = datetime.date.today()
+        min_birthYear = str((todayDate.year-18,todayDate.month,todayDate.day))
+        max_birthYear = str(todayDate)
         additions = '&gender=female'
         
         IMDbLink = "http://www.imdb.com/search/name?birth_date="
@@ -53,9 +58,9 @@ while True:
             for i in range(1, int(50-len(submission.title))):
                 spacerThing +=" "
             if len(submission.title)>49:
-                print('\n|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n|'+submission.title[:45]+"... "+"|")
+                print(('\n%s\n|'+submission.title[:45]+'... '+'|')% topSep)
             else:
-                print('\n|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|\n|'+submission.title+spacerThing+"|")
+                print(('\n%s\n|'+submission.title+spacerThing+'|')% topSep)
             flaggedFor=""            
             if (submission.id in already_done):
                 finished = True
@@ -65,16 +70,10 @@ while True:
                 test = test.lower()
                 for star in starletNames:
                     if (star.lower() in test):
-                        '''nameThing ='------------------------\n  Found a name match:\n'
-                        i = 0
-                        while (i < ((len('------------------------')-len(star))/2)):
-                             nameThing+=' '
-                             i+=1
-                        nameThing += star+'\n------------------------'''
                         if len(flaggedFor)>0:
                             flaggedFor += ", "
                         flaggedFor += star
-                comment = ("This post has been flagged as violating the rules of this subreddit. One or more of the names in your submission's title matched entries on a [list of underage actresses.]({0})\n\nName(s) matched:\n\n    {1}\n\n^^^This ^^^is ^^^an ^^^automated ^^^response ^^^by ^^^a ^^^bot. ^^^If ^^^you ^^^believe ^^^that ^^^this ^^^submission ^^^was ^^^flagged ^^^in ^^^error ^^^please ^^^report ^^^this ^^^to ^^^the ^^^moderators ^^^of ^^^this ^^^subreddit ^^^or ^^^to ^^^my ^^^human: ^^^/u/subconcussive.")#% IMDbLink, star
+                comment = config.get('RESOURCES', 'COMMENT')#% IMDbLink, star
                 comment = comment.format(IMDbLink, flaggedFor)
                 submission.replace_more_comments()
                 if not submission.comments:
@@ -94,8 +93,8 @@ while True:
                         #print('|'+commentitem)
                         boolThing = (username==commentitem.author.name)
                         if (boolThing):
-                            print("|One of my comments                               ")
-                            print("|I've already commented in this thread")
+                            print("|One of my comments                               |")
+                            print("|I've already commented in this thread            |")
                             testCaseThing = False
                         else:
                             miscVar+=1
@@ -110,15 +109,15 @@ while True:
                     submission.report()
                     submission.add_comment(comment)
                     print("|Commented                                        |")
-                    print('|=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=|')
+                    print(bottomSep)
                 else:
                     print("|Not commenting in this thread                    |")
                     already_done.append(submission.id)
-                    print('|=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=|')
+                    print(bottomSep)
                 already_done.append(submission.id)
-                time.sleep(2)
+                time.sleep(1)
             time.sleep(2)
-    time.sleep(2)
+    time.sleep(15)
             
                 
                 

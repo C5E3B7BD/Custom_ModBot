@@ -1,0 +1,7 @@
+IMDb Parser Documentation
+
+Initialize the object as a function:
+e.g.
+	x=Actors()
+
+When using the URL_additions extension always include the leading ampersand
