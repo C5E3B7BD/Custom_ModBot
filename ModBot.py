@@ -7,7 +7,7 @@ import datetime
 import IMDbParser
 from bs4 import BeautifulSoup
 r = praw.Reddit('Customized modbot for scottss by /u/subconcussive')
-q = IMDbParser.Actors()
+q = IMDbParser.Actor()
 
 #Parse settings.config
 config = configparser.ConfigParser()
