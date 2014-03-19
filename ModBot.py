@@ -12,9 +12,34 @@ q = IMDbParser.Actor()
 #Parse settings.config
 config = configparser.ConfigParser()
 config.read('settings.cfg')
-username = config.get('AUTH', 'USERNAME')
-password = config.get('AUTH', 'PASSWORD')
-subR = config.get('SETTINGS', 'SUBREDDIT')
+try:
+    username = config.get('AUTH', 'USERNAME')
+    password = config.get('AUTH', 'PASSWORD')
+except:
+    try:
+        import sys
+        args = sys.argv[1:]
+        dargs = args.split(" ")
+        username = dargs[0]
+        password = dargs[1]
+    except:
+        username = input("Enter Username: ")
+        password = input("Enter Password: ")
+        if (username == '' or password == ''):
+            raise ValueError()
+try:
+    subR = config.get('SETTINGS', 'SUBREDDIT')
+except:
+    try:
+        import sys
+        args = sys.argv[1:]
+        dargs = args.split(" ")
+        subR = dargs[2]
+    except:
+        subR = input("Enter Subreddit: ")
+        if subR == '':
+            raise ValueError()
+print('\n\n\n')
 topSep = '|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|'
 bottomSep = '|=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=|'
 

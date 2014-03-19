@@ -8,7 +8,7 @@ class Actors:
     def __init__(self):
         '''Nothing Goes on here'''
         
-    def Age(self, min_birthYear_Date, max_birthYear_Date = str(datetime.date.today()), URL_additions = ''):
+    def _Age_(self, min_birthYear_Date, max_birthYear_Date = str(datetime.date.today()), URL_additions = ''):
         #Features needing added:
         #Name Groups (awards)
         #an actual gender switch
