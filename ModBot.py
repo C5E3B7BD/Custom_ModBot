@@ -67,7 +67,11 @@ while True:
     while finished != True:
 
         todayDate = datetime.date.today()
-        min_birthYear = str((todayDate.year-18,todayDate.month,todayDate.day))
+        min_birthYear = str(todayDate.year-18)+"-"
+        if todayDate.month < 10:
+            min_birthYear += "0"+str(todayDate.month)+"-"+str(todayDate.day)
+        else:
+            min_birthYear += str(todayDate.month)+"-"+str(todayDate.day)
         max_birthYear = str(todayDate)
         additions = '&gender=female'
         
@@ -142,7 +146,7 @@ while True:
                 already_done.append(submission.id)
                 time.sleep(1)
             time.sleep(2)
-    time.sleep(15)
+    time.sleep(10)
             
                 
                 
