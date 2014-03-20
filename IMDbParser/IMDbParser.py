@@ -1,6 +1,6 @@
 import datetime
-import _ActorsHandlers_
-import _MoviesHandlers_
+from IMDbParser import _ActorsHandlers_
+from IMDbParser import _MoviesHandlers_
 class Actor:
     def __init__(self):
         '''Null'''

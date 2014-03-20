@@ -1,5 +1,5 @@
 import urllib3
-from Workers import Helpers
+from IMDbParser.Workers import Helpers
 from bs4 import BeautifulSoup
 
 global http

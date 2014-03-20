@@ -4,7 +4,7 @@ import time
 import pprint
 import urllib3
 import datetime
-import IMDbParser
+from IMDbParser import IMDbParser
 from bs4 import BeautifulSoup
 r = praw.Reddit('Customized modbot for scottss by /u/subconcussive')
 q = IMDbParser.Actor()
@@ -12,20 +12,33 @@ q = IMDbParser.Actor()
 #Parse settings.config
 config = configparser.ConfigParser()
 config.read('settings.cfg')
+
+#Get the Username, Password, and Subreddit
+#With error handling
+#-----------------------------------------#
 try:
     username = config.get('AUTH', 'USERNAME')
-    password = config.get('AUTH', 'PASSWORD')
 except:
     try:
         import sys
         args = sys.argv[1:]
         dargs = args.split(" ")
         username = dargs[0]
-        password = dargs[1]
     except:
         username = input("Enter Username: ")
+        if username == '':
+            raise ValueError()
+try:
+    password = config.get('AUTH', 'PASSWORD')
+except:
+    try:
+        import sys
+        args = sys.argv[1:]
+        dargs = args.split(" ")
+        password = dargs[1]
+    except:
         password = input("Enter Password: ")
-        if (username == '' or password == ''):
+        if password == '':
             raise ValueError()
 try:
     subR = config.get('SETTINGS', 'SUBREDDIT')
@@ -39,33 +52,43 @@ except:
         subR = input("Enter Subreddit: ")
         if subR == '':
             raise ValueError()
+#-----------------------------------------#
+
+#Assign seperators
+#-----------------------------------------#
 print('\n\n\n')
 topSep = '|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=|'
 bottomSep = '|=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=\u05BE=|'
+#-----------------------------------------#
+
 
 #Now login
+#-----------------------------------------#
 print('%s\n|Ignore any warnings that pop up                  |'% topSep)
 print("|They don't affect the bot.                       |")
 r.login(username, password)
 print('%s\n'% bottomSep)
+#-----------------------------------------#
 
 #Now do some setting up
+#-----------------------------------------#
 already_done = []
 finished = False
 starletNames = []
 flaggedFor=""
 miscVar = 0
 todayDate = None
+#-----------------------------------------#
 
 #Main Loop
+#This one never exits
+#-----------------------------------------#
 while True:
     subreddit = r.get_subreddit(subR)
-    numlimit = 25
+    numlimit = 5
     smsn=subreddit.get_new(limit=numlimit)
-    http = urllib3.PoolManager()
-    
-    while finished != True:
-
+    finished = False #Finished is set to true if/when we run into a submission that's contained in "already_done[]"
+    while not finished:
         todayDate = datetime.date.today()
         min_birthYear = str(todayDate.year-18)+"-"
         if todayDate.month < 10:
@@ -75,26 +98,20 @@ while True:
         max_birthYear = str(todayDate)
         additions = '&gender=female'
         
-        IMDbLink = "http://www.imdb.com/search/name?birth_date="
-        IMDbLink += str(min_birthYear)+','
-        IMDbLink += str(max_birthYear)
-        #That thing that looks like the Unicode unfound symbol box is just two _'s
-        IMDbLink += additions
-
+        IMDbLink = "http://www.imdb.com/search/name?birth_date=" + str(min_birthYear) + ',' + str(max_birthYear) + additions
         starletNames = q.Age(min_birthYear,max_birthYear,additions)
-        for submission in smsn:
-            spacerThing = ""
-            for i in range(1, int(50-len(submission.title))):
-                spacerThing +=" "
-            if len(submission.title)>49:
-                print(('\n%s\n|'+submission.title[:45]+'... '+'|')% topSep)
-            else:
-                print(('\n%s\n|'+submission.title+spacerThing+'|')% topSep)
-            flaggedFor=""            
+        for submission in smsn:            
             if (submission.id in already_done):
                 finished = True
-                break
             else:
+                spacerThing = ""
+                for i in range(1, int(50-len(submission.title))):
+                    spacerThing +=" "
+                if len(submission.title)>49:
+                    print(('\n%s\n|'+submission.title[:45]+'... '+'|')% topSep)
+                else:
+                    print(('\n%s\n|'+submission.title+spacerThing+'|')% topSep)
+                flaggedFor=""
                 test = '%s'% submission.title
                 test = test.lower()
                 for star in starletNames:
@@ -103,6 +120,7 @@ while True:
                             flaggedFor += ", "
                         flaggedFor += star
                 comment = config.get('RESOURCES', 'COMMENT')#% IMDbLink, star
+                comment = comment.replace("\\n","\n")
                 comment = comment.format(IMDbLink, flaggedFor)
                 submission.replace_more_comments()
                 if not submission.comments:
@@ -144,11 +162,17 @@ while True:
                     already_done.append(submission.id)
                     print(bottomSep)
                 already_done.append(submission.id)
-                time.sleep(1)
-            time.sleep(2)
-    time.sleep(10)
-            
-                
+                time.sleep(2)
+            already_done.append(submission.id)
+            time.sleep(5)
+        if (submission.id in already_done):
+            finished = True
+    try:
+        already_done.append(submission.id)
+    except:
+        #Something broke here
+        null=[]
+    time.sleep(30)
                 
                 
                 
