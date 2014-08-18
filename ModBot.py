@@ -93,6 +93,9 @@ while True:
     numlimit = 15
     smsn=subreddit.get_new(limit=numlimit)
     finished = False #Finished is set to true if/when we run into a submission that's contained in "already_done[]"
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
+## Unused code don't bother right now
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
 ##    #Request thread logic
 ##    if datetime.date.today().day == 1:
 ##        if not alreadyMadeAThreadThisMonth:
@@ -115,7 +118,9 @@ while True:
 ##                    if not requestSubmission.stickied:
 ##                        if subreddit.reddit_session.user.is_mod:
 ##                            requestSubmission.sticky'''
-    inbox = r.get_unread(False, False)
+## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## 
+
+    inbox = r.get_unread(True, True)
     for message in inbox:
             if (inbox == []):
                 finished = True
@@ -178,6 +183,8 @@ while True:
                         print("|"+str(len(submission.comments))+" comment "+spacerThing+'|')                    
 
                 testCaseThing = (submission.id not in already_done) and (flaggedFor != '')
+
+                #-----------------------------------------#
                 #Check if the user has already commented in this thread, if so don't comment
                 #-----------------------------------------#
                 for commentitem in submission.comments:
@@ -201,6 +208,8 @@ while True:
                 if testCaseThing == True:
                     if subreddit.reddit_session.user.is_mod:
                         submission.distinguish()
+                    r.user.send_message('SubConcussive',"UA content alert:\n"+comment+"\nLink:"+submission.url)
+                    submission.save()
                     submission.report()
                     submission.add_comment(comment)
                     print("|Commented                                        |")
